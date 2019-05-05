@@ -5,15 +5,15 @@ use Test;
 
 sub run($infile, $ex) {
     my @arr = $infile.IO.lines[0].comb;
-    my $sum = 0;
+    my $ans = 0;
     for ^@arr -> $i {
         if $ex == 0 {
-            $sum += @arr[$i] if @arr[$i] eq @arr[($i+1) % @arr];
+            $ans += @arr[$i] if @arr[$i] eq @arr[($i+1) % @arr];
         } elsif $ex == 1 {
-            $sum += @arr[$i] if @arr[$i] eq @arr[($i+@arr/2) % @arr];
+            $ans += @arr[$i] if @arr[$i] eq @arr[($i+@arr/2) % @arr];
         }
     }
-    $sum;
+    $ans;
 }
 
 # is run('01.t1', 0), 3;
