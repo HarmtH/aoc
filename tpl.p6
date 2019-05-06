@@ -14,7 +14,8 @@ sub run($infile, $ex) {
     $ans;
 }
 
-is run('tpl.t1', 0), 3;
+is run('tpl.t1', 0), 0;
+is run('tpl.t2', 1), 1;
 done-testing;
 
 say run('tpl.in', 0);
