@@ -25,7 +25,7 @@ sub dense-hash($string) {
     @lengths.append(17, 31, 73, 47, 23);
     my @sparse-hash = do-rounds([^256], @lengths, 64);
     my @dense-hash = @sparse-hash.rotor(16)>>.reduce(&[+^]);
-    @dense-hash.map({"%08b".sprintf($_)}).join;
+    @dense-hash.map(*.fmt("%08b")).join;
 }
 
 sub dfs($x, $y, @grid) {
