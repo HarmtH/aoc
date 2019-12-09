@@ -3,7 +3,7 @@
 use aoc::*;
 use itertools::Itertools;
 
-fn solve(machine_str: &str, part: Part) -> i32 {
+fn solve(machine_str: &str, part: Part) -> i64 {
     let mut solution = None;
     let mut machines: Vec<IntCodeEmulator> =
         std::iter::repeat(machine_str.into()).take(5).collect();

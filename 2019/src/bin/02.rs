@@ -29,7 +29,7 @@ fn solve(input: &str, part: u8) -> GenResult<String> {
     }
 }
 
-fn run(input: &str, noun: Option<i32>, verb: Option<i32>) -> GenResult<i32> {
+fn run(input: &str, noun: Option<i64>, verb: Option<i64>) -> GenResult<i64> {
     let mut machine = aoc::IntCodeEmulator::from(input);
 
     if let Some(noun) = noun {

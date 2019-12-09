@@ -12,11 +12,12 @@ enum OpCode {
     JumpIfFalse,
     LessThan,
     Equals,
+    AdjustRelativeBase,
     Halt
 }
 
-impl From<i32> for OpCode {
-    fn from(opcode: i32) -> OpCode {
+impl From<i64> for OpCode {
+    fn from(opcode: i64) -> OpCode {
         use OpCode::*;
 
         match opcode {
@@ -28,6 +29,7 @@ impl From<i32> for OpCode {
             6 => JumpIfFalse,
             7 => LessThan,
             8 => Equals,
+            9 => AdjustRelativeBase,
             99 => Halt,
             _ => panic!("Illegal OpCode found: {}", opcode)
         }
@@ -36,16 +38,17 @@ impl From<i32> for OpCode {
 
 #[derive(Debug,PartialEq,Clone)]
 enum OpMode {
-    Positional, Immediate
+    Positional, Immediate, Relative
 }
 
-impl From<i32> for OpMode {
-    fn from(opmode: i32) -> OpMode {
+impl From<i64> for OpMode {
+    fn from(opmode: i64) -> OpMode {
         use OpMode::*;
 
         match opmode {
             0 => Positional,
             1 => Immediate,
+            2 => Relative,
             _ => panic!("Illegal OpMode found: {}", opmode)
         }
     }
@@ -57,8 +60,8 @@ struct OpField {
     opmodes: Vec<OpMode>,
 }
 
-impl From<i32> for OpField {
-    fn from(mut op: i32) -> OpField {
+impl From<i64> for OpField {
+    fn from(mut op: i64) -> OpField {
         let opcode: OpCode = (op % 100).into();
         op /= 100;
         let mut opmodes = Vec::new();
@@ -77,12 +80,13 @@ pub enum Interrupt {
 
 #[derive(Debug, Clone)]
 pub struct IntCodeEmulator {
-    pub program: Vec<i32>,
-    pub backup: Vec<i32>,
+    pub program: Vec<i64>,
+    pub backup: Vec<i64>,
     pub ip: usize,
-    pub last_out: Option<i32>,
-    pub input: VecDeque<i32>,
-    pub output: VecDeque<i32>,
+    pub rel_base: usize,
+    pub last_out: Option<i64>,
+    pub input: VecDeque<i64>,
+    pub output: VecDeque<i64>,
 }
 
 impl From<&str> for IntCodeEmulator {
@@ -91,15 +95,15 @@ impl From<&str> for IntCodeEmulator {
             .trim()
             .split(',')
             .map(|s| s.parse().unwrap_or_else(|err| panic!("{}: {}", err, s)))
-            .collect::<Vec<i32>>()
+            .collect::<Vec<i64>>()
             .into()
     }
 }
 
-impl From<Vec<i32>> for IntCodeEmulator {
-    fn from(program: Vec<i32>) -> IntCodeEmulator {
+impl From<Vec<i64>> for IntCodeEmulator {
+    fn from(program: Vec<i64>) -> IntCodeEmulator {
         let backup = program.clone();
-        Self{program, backup, ip: 0, last_out: None,
+        Self{program, backup, ip: 0, rel_base: 0, last_out: None,
             input: VecDeque::new(), output: VecDeque::new() }
     }
 }
@@ -109,16 +113,38 @@ impl IntCodeEmulator {
         self.program[self.ip].into()
     }
 
-    fn get_mut_operand(&mut self, num: usize) -> &mut i32 {
-        let pos = self.program[self.ip + num + 1] as usize;
-        self.program.get_mut(pos).unwrap() 
+    fn prepare_memory(&mut self, index: usize) {
+        if index >= self.program.len() {
+            self.program.append(&mut vec![0; index - self.program.len() + 1]);
+        }
     }
 
-    fn get_operand(&self, num: usize) -> i32 {
-        let data = self.program[self.ip + num + 1];
+    fn get_program(&mut self, index: usize) -> i64 {
+        self.prepare_memory(index);
+        self.program[index]
+    }
+
+    fn get_mut_program(&mut self, index: usize) -> &mut i64 {
+        self.prepare_memory(index);
+        self.program.get_mut(index).unwrap() 
+
+    }
+
+    fn get_operand(&mut self, num: usize) -> i64 {
+        let data = self.get_program(self.ip + num + 1);
         match self.get_opfield().opmodes.get(num) {
             Some(&OpMode::Immediate) => data,
-            _ => self.program[data as usize]
+            Some(&OpMode::Relative) => self.get_program((self.rel_base as i64 + data) as usize),
+            Some(&OpMode::Positional) | None => self.get_program(data as usize)
+        }
+    }
+
+    fn get_mut_operand(&mut self, num: usize) -> &mut i64 {
+        let data = self.get_program(self.ip + num + 1);
+        match self.get_opfield().opmodes.get(num) {
+            Some(&OpMode::Immediate) => panic!("Tried to get mutable operand in Immediate mode"),
+            Some(&OpMode::Relative) => self.get_mut_program((self.rel_base as i64 + data) as usize),
+            Some(&OpMode::Positional) | None => self.get_mut_program(data as usize)
         }
     }
 
@@ -267,6 +293,15 @@ impl IntCodeEmulator {
 
                 self.ip += 4;
                 // println!("Equals {:?}", self);
+                None
+            },
+            AdjustRelativeBase => {
+                let rel_base_offset = self.get_operand(0);
+                
+                self.rel_base = (self.rel_base as i64 + rel_base_offset) as usize;
+
+                self.ip += 2;
+                // println!("AdjustRelativeBase {:?}", self);
                 None
             },
             Halt => {
