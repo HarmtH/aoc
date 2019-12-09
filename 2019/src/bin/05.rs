@@ -7,14 +7,14 @@ fn solve(input: &str, part: Part) -> String {
 
     match part {
         Part1 => {
-            machine.input.push(1);
+            machine.input.push_back(1);
             machine.run_to_halt();
-            machine.output.pop().expect("No output").to_string()
+            machine.output.pop_front().expect("No output").to_string()
         }
         Part2 => {
-            machine.input.push(5);
+            machine.input.push_back(5);
             machine.run_to_halt();
-            machine.output.pop().expect("No output").to_string()
+            machine.output.pop_front().expect("No output").to_string()
         }
     }
 }
@@ -40,34 +40,34 @@ mod tests {
     }
 
     #[test]
-    fn test_part21() {
+    fn test_part2() {
         let input = "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,\
             0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,\
             1000,1,20,4,20,1105,1,46,98,99";
 
         let mut machine: IntCodeEmulator = input.into();
-        machine.input.push(6);
+        machine.input.push_back(6);
         machine.run_to_halt();
-        assert_eq!(machine.output.pop().expect("No output"), 999);
+        assert_eq!(machine.output.pop_front().expect("No output"), 999);
 
-        let mut machine: IntCodeEmulator = input.into();
-        machine.input.push(7);
+        machine.reset_all();
+        machine.input.push_back(7);
         machine.run_to_halt();
-        assert_eq!(machine.output.pop().expect("No output"), 999);
+        assert_eq!(machine.output.pop_front().expect("No output"), 999);
 
-        let mut machine: IntCodeEmulator = input.into();
-        machine.input.push(8);
+        machine.reset_all();
+        machine.input.push_back(8);
         machine.run_to_halt();
-        assert_eq!(machine.output.pop().expect("No output"), 1000);
+        assert_eq!(machine.output.pop_front().expect("No output"), 1000);
 
-        let mut machine: IntCodeEmulator = input.into();
-        machine.input.push(9);
+        machine.reset_all();
+        machine.input.push_back(9);
         machine.run_to_halt();
-        assert_eq!(machine.output.pop().expect("No output"), 1001);
+        assert_eq!(machine.output.pop_front().expect("No output"), 1001);
 
-        let mut machine: IntCodeEmulator = input.into();
-        machine.input.push(10);
+        machine.reset_all();
+        machine.input.push_back(10);
         machine.run_to_halt();
-        assert_eq!(machine.output.pop().expect("No output"), 1001);
+        assert_eq!(machine.output.pop_front().expect("No output"), 1001);
     }
 }

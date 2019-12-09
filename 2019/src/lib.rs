@@ -1,5 +1,6 @@
 #![warn(clippy::all)]
 
+#[derive(PartialEq)]
 pub enum Part {
     Part1,
     Part2,

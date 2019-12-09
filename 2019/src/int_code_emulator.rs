@@ -1,5 +1,7 @@
 #![warn(clippy::all)]
 
+use std::collections::VecDeque;
+
 #[derive(Debug,PartialEq,Clone)]
 enum OpCode {
     Add,
@@ -70,15 +72,17 @@ impl From<i32> for OpField {
 
 #[derive(Debug,PartialEq,Clone)]
 pub enum Interrupt {
-    InputConsumed, OutputSet, Halted
+    InputRequested, InputConsumed, OutputGenerated, Halted
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct IntCodeEmulator {
     pub program: Vec<i32>,
+    pub backup: Vec<i32>,
     pub ip: usize,
-    pub input: Vec<i32>,
-    pub output: Vec<i32>,
+    pub last_out: Option<i32>,
+    pub input: VecDeque<i32>,
+    pub output: VecDeque<i32>,
 }
 
 impl From<&str> for IntCodeEmulator {
@@ -94,7 +98,9 @@ impl From<&str> for IntCodeEmulator {
 
 impl From<Vec<i32>> for IntCodeEmulator {
     fn from(program: Vec<i32>) -> IntCodeEmulator {
-        Self{program, ip: 0, input: Vec::new(), output: Vec::new()}
+        let backup = program.clone();
+        Self{program, backup, ip: 0, last_out: None,
+            input: VecDeque::new(), output: VecDeque::new() }
     }
 }
 
@@ -130,6 +136,40 @@ impl IntCodeEmulator {
         }
     }
 
+    pub fn run_to_interrupt_list(&mut self,
+                                 interrupt_list: &[Interrupt]) -> Interrupt {
+        loop {
+            let res = self.execute();
+            if let Some(res) = res {
+                if interrupt_list.contains(&res) {
+                    return res
+                }
+            }
+        }
+    }
+
+    pub fn is_halted(&self) -> bool {
+        self.get_opfield().opcode == OpCode::Halt
+    }
+
+    pub fn reset_program(&mut self) {
+        self.program = self.backup.clone();
+        self.ip = 0;
+    }
+
+    pub fn reset_all(&mut self) {
+        self.reset_program();
+        self.last_out = None;
+        if !self.input.is_empty() {
+            // println!("Input had data: {:?}", self.input);
+            self.input.clear()
+        }
+        if !self.output.is_empty() {
+            // println!("Input had data: {:?}", self.output);
+            self.output.clear()
+        }
+    }
+
     fn execute(&mut self) -> Option<Interrupt> {
         use OpCode::*;
         use Interrupt::*;
@@ -158,24 +198,28 @@ impl IntCodeEmulator {
                 None
             },
             Input => {
-                let input = self.input.pop()
-                    .expect("Input requsted with empty input vector");
-                let dst = self.get_mut_operand(2);
+                if self.input.is_empty() {
+                    // println!("Requested input, {:?}", self);
+                    return Some(InputRequested)
+                }
+                let input = self.input.pop_front().unwrap();
+                let dst = self.get_mut_operand(0);
 
                 *dst = input;
 
                 self.ip += 2;
-                // println!("Stored input, {:?}", self);
+                // println!("Consumed input, {:?}", self);
                 Some(InputConsumed)
             }
             Output => {
                 let src = self.get_operand(0);
 
-                self.output.push(src);
+                self.output.push_back(src);
+                self.last_out = Some(src);
 
                 self.ip += 2;
-                // println!("Pushed output, {:?}", src);
-                Some(OutputSet)
+                // println!("Generated output, {:?}", src);
+                Some(OutputGenerated)
             }
             JumpIfTrue => {
                 let cond = self.get_operand(0);
@@ -225,7 +269,9 @@ impl IntCodeEmulator {
                 // println!("Equals {:?}", self);
                 None
             },
-            Halt => Some(Halted),
+            Halt => {
+                Some(Halted)
+            }
         }
     }
 }
