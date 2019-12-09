@@ -11,10 +11,6 @@ fn get_layers(input: &str, width: usize, height: usize) -> Vec<&[u8]> {
 }
 
 fn solve(input: &str, part: Part) -> String {
-    const ZERO: u8 = 48;
-    const ONE: u8 = 49;
-    const TWO: u8 = 50;
-
     const ROWS: usize = 6;
     const COLS: usize = 25;
 
@@ -24,10 +20,10 @@ fn solve(input: &str, part: Part) -> String {
         Part1 => {
             let min0layer = layers
                 .iter()
-                .min_by_key(|img| bytecount::count(img, ZERO))
+                .min_by_key(|img| bytecount::count(img, b'0'))
                 .unwrap();
 
-            (bytecount::count(min0layer, ONE) * bytecount::count(min0layer, TWO)).to_string()
+            (bytecount::count(min0layer, b'1') * bytecount::count(min0layer, b'2')).to_string()
         }
         Part2 => {
             (0..ROWS)
@@ -37,11 +33,12 @@ fn solve(input: &str, part: Part) -> String {
                      .map(|col| layers
                           .iter()
                           .map(|layer| layer[row*COLS+col])
-                          .find(|&u8chr| u8chr != TWO)
+                          .find(|&u8chr| u8chr != b'2')
                           .unwrap())
-                     .map(|u8chr| if u8chr == ZERO {' '} else {'#'})
-                     .collect::<String>() + "\n")
-                .collect()
+                     .map(|u8chr| if u8chr == b'0' {' '} else {'\u{2588}'})
+                     .collect::<String>())
+                .collect::<Vec<String>>()
+                .join("\n")
         }
     }
 }

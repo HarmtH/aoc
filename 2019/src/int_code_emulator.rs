@@ -127,7 +127,6 @@ impl IntCodeEmulator {
     fn get_mut_program(&mut self, index: usize) -> &mut i64 {
         self.prepare_memory(index);
         self.program.get_mut(index).unwrap() 
-
     }
 
     fn get_operand(&mut self, num: usize) -> i64 {
