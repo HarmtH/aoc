@@ -78,7 +78,7 @@ pub enum Interrupt {
     InputRequested, InputConsumed, OutputGenerated, Halted
 }
 
-#[derive(Debug, Clone)]
+#[derive(Default, Debug, Clone)]
 pub struct IntCodeEmulator {
     pub program: Vec<i64>,
     pub backup: Vec<i64>,
@@ -103,8 +103,7 @@ impl From<&str> for IntCodeEmulator {
 impl From<Vec<i64>> for IntCodeEmulator {
     fn from(program: Vec<i64>) -> IntCodeEmulator {
         let backup = program.clone();
-        Self{program, backup, ip: 0, rel_base: 0, last_out: None,
-            input: VecDeque::new(), output: VecDeque::new() }
+        Self{program, backup, ..Self::new()}
     }
 }
 
@@ -145,6 +144,11 @@ impl IntCodeEmulator {
             Some(&OpMode::Relative) => self.get_mut_program((self.rel_base as i64 + data) as usize),
             Some(&OpMode::Positional) | None => self.get_mut_program(data as usize)
         }
+    }
+
+    pub fn new() -> Self {
+        Self{program: Vec::new(), backup: Vec::new(), ip:0, rel_base: 0, last_out: None,
+            input: VecDeque::new(), output: VecDeque::new() }
     }
 
     pub fn run_to_halt(&mut self) {
