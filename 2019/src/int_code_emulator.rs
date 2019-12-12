@@ -2,7 +2,7 @@
 
 use std::collections::VecDeque;
 
-#[derive(Debug,PartialEq,Clone)]
+#[derive(Debug,PartialEq,Clone,Copy)]
 enum OpCode {
     Add,
     Multiply,
@@ -36,7 +36,7 @@ impl From<i64> for OpCode {
     }
 }
 
-#[derive(Debug,PartialEq,Clone)]
+#[derive(Debug,PartialEq,Clone,Copy)]
 enum OpMode {
     Positional, Immediate, Relative
 }
@@ -73,7 +73,7 @@ impl From<i64> for OpField {
     }
 }
 
-#[derive(Debug,PartialEq,Clone)]
+#[derive(Debug,PartialEq,Clone,Copy)]
 pub enum Interrupt {
     InputRequested, InputConsumed, OutputGenerated, Halted
 }

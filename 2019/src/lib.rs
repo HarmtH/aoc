@@ -12,6 +12,16 @@ pub enum Part {
 }
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Copy)]
+pub enum Direction { UP, DOWN, LEFT, RIGHT }
+use Direction::*;
+
+impl From<i64> for Direction {
+    fn from(int: i64) -> Self {
+        if int == 0 { LEFT } else if int == 1 { RIGHT } else { panic!() }
+    }
+}
+
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Copy)]
 pub struct Point {
     pub x: i16,
     pub y: i16,
@@ -33,6 +43,17 @@ impl Point {
         let tangent = Point{x: other.x - self.x, y: other.y - self.y};
         let gcd = num::integer::gcd(tangent.x, tangent.y);
         Point{x: tangent.x/gcd, y: tangent.y/gcd}
+    }
+
+    pub fn step(&mut self, dir: Direction, dist: i16) -> &mut Self {
+        use Direction::*;
+        match dir {
+            UP => self.y += dist,
+            RIGHT => self.x += dist,
+            DOWN => self.y -= dist,
+            LEFT => self.x -= dist,
+        }
+        self
     }
 }
 
