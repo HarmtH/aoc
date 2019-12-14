@@ -22,6 +22,76 @@ impl From<i64> for Direction {
 }
 
 #[derive(Debug, Eq, PartialEq, Hash, Clone, Copy)]
+pub struct Point3d {
+    pub x: i16,
+    pub y: i16,
+    pub z: i16,
+}
+
+impl Point3d {
+    pub fn dist(self) -> u16 {
+        (self.x.abs() + self.y.abs() + self.z.abs()) as u16
+    }
+}
+
+impl std::ops::AddAssign for Point3d {
+    fn add_assign(&mut self, other: Self) {
+        *self = Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+        };
+    }
+}
+
+impl std::ops::Add for Point3d {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self {
+        Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+        }
+    }
+}
+
+impl std::ops::Sub for Point3d {
+    type Output = Self;
+
+    fn sub(self, other: Self) -> Self {
+        Self {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+        }
+    }
+}
+
+impl std::ops::Index<u8> for Point3d {
+    type Output = i16;
+    fn index(&self, s: u8) -> &i16 {
+        match s {
+            0 => &self.x,
+            1 => &self.y,
+            2 => &self.z,
+            _ => panic!("unknown field: {}", s)
+        }
+    }
+}
+
+impl std::ops::IndexMut<u8> for Point3d {
+    fn index_mut(&mut self, s: u8) -> &mut i16 {
+        match s {
+            0 => &mut self.x,
+            1 => &mut self.y,
+            2 => &mut self.z,
+            _ => panic!("unknown field: {}", s)
+        }
+    }
+}
+
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Copy)]
 pub struct Point {
     pub x: i16,
     pub y: i16,
