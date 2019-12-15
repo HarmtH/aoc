@@ -74,10 +74,9 @@ fn solve(input: &str, part: Part) -> String {
             machine.run_to_interrupt_list(&[Interrupt::InputRequested, Interrupt::Halted]);
             if !machine.output.is_empty() {
                 coloured_points.insert(robot.pos, machine.output.pop_front().unwrap().into());
-                use Direction::*;
-                match machine.output.pop_front().unwrap().into() {
-                    LEFT => robot.turn_left(),
-                    RIGHT => robot.turn_right(),
+                match machine.output.pop_front().unwrap() {
+                    0 => robot.turn_left(),
+                    1 => robot.turn_right(),
                     _ => (),
                 }
                 robot.step();
