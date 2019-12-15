@@ -114,7 +114,7 @@ impl IntCodeEmulator {
 
     fn prepare_memory(&mut self, index: usize) {
         if index >= self.program.len() {
-            self.program.append(&mut vec![0; index - self.program.len() + 1]);
+            self.program.resize(index+1, 0);
         }
     }
 
