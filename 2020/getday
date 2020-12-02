@@ -1,0 +1,9 @@
+#!/bin/bash
+
+COOKIE=$(<"$(dirname "$0")/cookie")
+DAY=${1:-$(date "+%-d")}
+PADDAY=$(printf "%.2d" "$DAY")
+curl "https://adventofcode.com/2020/day/$DAY/input" -H "Cookie: session=$COOKIE" > "inputs/$PADDAY.in"
+sed "s/_DAY_/$PADDAY/g" < src/template.rs > "src/bin/$PADDAY.rs"
+firefox "https://adventofcode.com/2020/day/$DAY" &
+editor +NOWAIT +VTSTEAL -O "src/bin/$PADDAY.rs" "inputs/$PADDAY.in"
