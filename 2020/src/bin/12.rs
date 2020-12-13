@@ -72,8 +72,8 @@ fn solve(input: &str, part: Part) -> i32 {
 
     match part {
         Part1 => {
-            let mut direction: Direction = Direction::East;
-            let mut position: Position = Position{x: 0, y: 0};
+            let mut direction = Direction::East;
+            let mut position = Position{x: 0, y: 0};
             for (action, value) in instructions {
                 match action {
                     Action::MoveNorth => position.y += value,
@@ -93,8 +93,8 @@ fn solve(input: &str, part: Part) -> i32 {
             position.get_manhattan()
         }
         Part2 => {
-            let mut ship_position: Position = Position{x: 0, y: 0};
-            let mut waypoint_relative_position: Position = Position{x: 10, y: 1};
+            let mut ship_position = Position{x: 0, y: 0};
+            let mut waypoint_relative_position = Position{x: 10, y: 1};
             for (action, value) in instructions {
                 match action {
                     Action::MoveNorth => waypoint_relative_position.y += value,
