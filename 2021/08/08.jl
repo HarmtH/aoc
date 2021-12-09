@@ -39,19 +39,19 @@ function part2(parsedData = parseInput())
         [1,2,3,4,6,7]
     ]
     res = 0
+    origarrarr = map(line -> (sort(map(line[1]) do segstring
+                                      sort(collect(segstring))
+                                  end), line[2]), lines)
     for perm in permutations('a':'g')
         cmparr = sort(map(num2seg) do num
             sort(map(num) do seg
                 perm[seg]
             end)
         end)
-        for line in lines
-            origarr = sort(map(line[1]) do segstring
-                               sort(collect(segstring))
-                           end)
+        for (origarr, segstrings) in origarrarr
             if cmparr == origarr
                 ans = 0
-                for segstring in line[2]
+                for segstring in segstrings
                     segs = sort(map(collect(segstring)) do c
                         only(findall(==(c), perm))
                     end)
