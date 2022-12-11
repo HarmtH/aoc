@@ -48,6 +48,15 @@ Monkey 3:
     :initform 0
     :accessor mutations)))
 
+(defparameter *monkey-pattern*
+"Monkey .+:
+  Starting items: (.+)
+  Operation: new = old (.) (.+)
+  Test: divisible by (.+)
+    If true: throw to monkey (.+)
+    If false: throw to monkey (.+)
+")
+
 (defmethod monkey-push ((self monkey) item)
   (setf (items self) (cons item (items self))))
 
@@ -58,29 +67,27 @@ Monkey 3:
     (mapcar (compose (toss self) simplify (mutate self))
             olditems)))
 
-(defun parse-mutate (string)
-  (let ((operator (if (char= (char string 23) #\+) #'+ #'*))
-        (operand (parse-integer (subseq string 25) :junk-allowed t)))
+(defun parse-mutate (stroperator stroperand)
+  (let ((operator (if (string= stroperator "+") #'+ #'*))
+        (operand (parse-integer stroperand :junk-allowed t)))
     (lambda (x) (funcall operator x (or operand x)))))
 
-(defun parse-toss (monkeyinfo)
-  (lambda (item) (cons (if (= (mod item (parse-integer (subseq (nth 3 monkeyinfo) 21))) 0)
-                           (parse-integer (subseq (nth 4 monkeyinfo) 29))
-                           (parse-integer (subseq (nth 5 monkeyinfo) 30)))
+(defun parse-toss (divisor targett targetf)
+  (lambda (item) (cons (if (= (mod item (parse-integer divisor)) 0)
+                           (parse-integer targett)
+                           (parse-integer targetf))
                        item)))
 
-(defun parse-items (string)
-  (mapcar #'parse-integer
-          (split ", " (subseq string 18))))
-
-(defun d11/parse (input)
-  (loop for monkey in (split "\\n\\n" input)
-        for monkeyinfo = (split "\\n" monkey)
-        collect (make-instance 'monkey
-                               :items (parse-items (nth 1 monkeyinfo))
-                               :mutate (parse-mutate (nth 2 monkeyinfo))
-                               :divisor (parse-integer (subseq (nth 3 monkeyinfo) 21))
-                               :toss (parse-toss monkeyinfo))))
+(defun d11/parse (input &aux (monkeys nil))
+  (cl-ppcre:do-register-groups (items operator operand divisor targett targetf)
+      (*monkey-pattern* input)
+    (push (make-instance 'monkey
+                         :items (mapcar #'parse-integer (split ", " items))
+                         :mutate (parse-mutate operator operand)
+                         :divisor (parse-integer divisor)
+                         :toss (parse-toss divisor targett targetf))
+          monkeys))
+  (reverse monkeys))
 
 (defun d11/t1 ()
   (every #'identity
