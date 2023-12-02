@@ -1,0 +1,3 @@
+-std=gnu++20
+-Wall
+-Wshadow-all
