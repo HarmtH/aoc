@@ -7,18 +7,9 @@ int main (int argc, char *argv[]) {
     int sum{0};
     std::string line;
     while (std::getline(std::cin, line)) {
-        std::stringstream ss(line);
-        int num{-1};
-        int last{-1};
-        while (!ss.eof()) {
-            char c; ss >> c;
-            if (std::isdigit(c)) {
-                last = c - '0';
-                if (num == -1) num = last * 10;
-            }
-        }
-        num += last;
-        sum += num;
+        auto first_pos = line.find_first_of("0123456789");
+        auto last_pos = line.find_last_of("0123456789");
+        sum += line[first_pos] * 10 + line[last_pos];
     }
     std::cout << sum << std::endl;
     return 0;
