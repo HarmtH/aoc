@@ -15,9 +15,10 @@ for TESTFILE in $T; do
         if [ "$ANS" = "$CMPANS" ]; then
             echo pass
         else
-            echo fail: $CMPANS
+            echo FAIL: $CMPANS
         fi
     else
         echo no cmp file
     fi
+    echo ---
 done
