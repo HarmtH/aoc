@@ -7,17 +7,16 @@ else
 	CXXFLAGS+=-g
 endif
 
-%a.test: %a
-	./test.sh $*a
+# Make executables explicit targets, so that implicit rules with
+# match-anything prerequisites (read: executables) work
+SOURCES = $(wildcard *.cpp)
+$(SOURCES:.cpp=):
 
-%b.test: %b
-	./test.sh $*b
+%.test: %
+	./test.sh $*
 
-%a.run: %a
-	./$*a < $*.in
-
-%b.run: %b
-	./$*b < $*.in
+%.run: %
+	./$* < $(subst a,,$(subst b,,$*)).in
 
 %.in:
 	curl -s 'https://adventofcode.com/2023/day/$(shell echo $* | sed s/^0//)/input' -H "Cookie: session=$$(cat cookie.txt)" > $@
