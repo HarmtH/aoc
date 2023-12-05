@@ -1,12 +1,38 @@
+#include <algorithm>
 #include <climits>
 #include <iostream>
+#include <mutex>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <vector>
+
+std::mutex lowest_mutex;
+long lowest{LONG_MAX};
 
 struct rule_t {
     long src, dst, length;
 };
+
+void calc(const std::vector<std::vector<rule_t>>& maps, long start, long length) {
+    long thread_lowest;
+    for (long seed = start; seed < start + length; seed++) {
+        long res{seed};
+        for (const auto& map : maps) {
+            for (const auto& rule : map) {
+                if (res >= rule.src && res < rule.src + rule.length) {
+                    res += rule.dst - rule.src;
+                    break;
+                }
+            }
+        }
+        thread_lowest = std::min(thread_lowest, res);
+    }
+
+    lowest_mutex.lock();
+    lowest = std::min(lowest, thread_lowest);
+    lowest_mutex.unlock();
+}
 
 int main (int argc, char *argv[]) {
     std::string line;
@@ -38,21 +64,12 @@ int main (int argc, char *argv[]) {
         }
     }
 
-    long lowest{LONG_MAX};
+    std::vector<std::thread> threads;
     for (long i{0}; i < seeds.size() - 1; i += 2) {
-        for (long seed = seeds[i]; seed < seeds[i] + seeds[i+1]; seed++) {
-            long res{seed};
-            for (const auto& map : maps) {
-                for (const auto& rule : map) {
-                    if (res >= rule.src && res < rule.src + rule.length) {
-                        res += rule.dst - rule.src;
-                        break;
-                    }
-                }
-            }
-            lowest = std::min(lowest, res);
-        }
+        threads.emplace_back(std::thread(calc, std::ref(maps), seeds[i], seeds[i+1]));
     }
+    for (auto& th : threads) 
+        th.join();
 
     std::cout << lowest << std::endl;
 
