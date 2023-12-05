@@ -9,10 +9,11 @@ for TESTFILE in $T; do
     echo "./$1 < $TESTFILE"
     ANS=$(./$1 < $TESTFILE)
     echo "$ANS"
+    REALANS=$(echo "$ANS" | tail -n 1)
     CMPFILE=$(echo $TESTFILE | sed 's/\.t\([0-9]\)\+$/\.a\1/')
     if [ $TESTFILE != $CMPFILE ] && [ -e $CMPFILE ]; then
         CMPANS=$(cat $CMPFILE)
-        if [ "$ANS" = "$CMPANS" ]; then
+        if [ "$REALANS" = "$CMPANS" ]; then
             echo pass
         else
             echo FAIL: $CMPANS
