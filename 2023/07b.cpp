@@ -1,7 +1,7 @@
 #include <algorithm>
+#include <compare>
 #include <iostream>
 #include <map>
-#include <sstream>
 #include <string>
 #include <vector>
 
@@ -9,8 +9,11 @@ struct hand_t {
     enum { HIGH_CARD, ONE_PAIR, TWO_PAIR, THREE_OF_A_KIND,
         FULL_HOUSE, FOUR_OF_A_KIND, FIVE_OF_A_KIND };
     enum { T = 10, J = 1, Q = 12, K = 13, A = 14 };
+    int score;
     std::vector<int> cards;
-    int bid, score;
+    int bid;
+
+    auto operator<=>(const hand_t&) const = default;
 
     void calc_score() {
         std::map<int, int> card2freq;
@@ -21,7 +24,6 @@ struct hand_t {
         std::vector<int> freqs;
         for (const auto& [k, v] : card2freq) freqs.push_back(v);
         std::sort(freqs.begin(), freqs.end(), std::greater<int>());
-
         freqs.at(0) += jokers;
 
         if (freqs.at(0) == 5) score = FIVE_OF_A_KIND;
@@ -52,17 +54,9 @@ struct hand_t {
 
         return in;
     }
-
-    bool operator<(const hand_t& rhs) const {
-        if (score != rhs.score)
-            return score < rhs.score;
-        else
-            return cards < rhs.cards;
-    }
 };
 
 int main (int argc, char *argv[]) {
-    std::string line;
     std::vector<hand_t> hands;
 
     hand_t hand;
