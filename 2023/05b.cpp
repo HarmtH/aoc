@@ -15,7 +15,7 @@ struct rule_t {
 };
 
 void calc(const std::vector<std::vector<rule_t>>& maps, long start, long length) {
-    long thread_lowest;
+    long thread_lowest{0};
     for (long seed = start; seed < start + length; seed++) {
         long res{seed};
         for (const auto& map : maps) {
