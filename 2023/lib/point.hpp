@@ -19,6 +19,7 @@ struct point_t {
     point_t(const char dir) { *this = dirs.at(std::string{dir}); };
 
     bool is_valid(long ys, long xs) const { return 0 <= y && y < ys && 0 <= x && x < xs; }
+    template<class T> bool is_valid(const T& grid) const { return 0 <= y && y < grid.size() && 0 <= x && x < grid[0].size(); }
     long dist(void) const { return labs(y) + labs(x); }
     long dist(const point_t& rhs) const { return labs(y - rhs.y) + labs(x - rhs.x); }
     std::vector<point_t> get_valid_neighbours(long ys, long xs, nb_dir_t nb_dir = ALL) const {
@@ -28,6 +29,9 @@ struct point_t {
             if (new_point.is_valid(ys, xs)) neighbours.emplace_back(std::move(new_point));
         }
         return neighbours;
+    }
+    template<class T> std::vector<point_t> get_valid_neighbours(const T& grid, nb_dir_t nb_dir = ALL) const {
+        return get_valid_neighbours(grid.size(), grid[0].size(), nb_dir);
     }
     std::vector<point_t> get_neighbours(nb_dir_t nb_dir = ALL) const {
         return get_valid_neighbours(INT_MAX, INT_MAX, nb_dir);
