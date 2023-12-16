@@ -1,35 +1,34 @@
 #include "lib/prelude.hpp"
 
-using line_t = pair<string, vector<int>>;
+using line_t = pair<int, int>;
 
-map<line_t, long> lut;
-long solve(line_t line) {
-    if (lut.contains(line)) return lut[line];
-
-    auto [record, groups] = line;
+long solve(line_t line, vector<long>& lut, const string& record, const vector<int>& groups) {
+    auto [rl, gl] = line; // record length, group length
+    int index = rl * 64 + gl;
+    if (lut[index] != -1) return lut[index];
     long subans = 0;
 
-    if (groups.empty()) return record.find('#') == -1;
+    if (gl == 0) return record.find('#') >= rl;
 
-    if (groups.back() > record.length()) return 0;
+    if (groups[gl - 1] > rl) return 0;
 
-    if (record.back() == '.') {
-        return solve({record.substr(0, record.length() - 1), groups});
+    if (record[rl - 1] == '.') {
+        return solve({rl - 1, gl}, lut, record, groups);
     }
 
-    if (record.back() == '?') {
-        subans += solve({record.substr(0, record.length() - 1), groups});
+    if (record[rl - 1] == '?') {
+        subans += solve({rl - 1, gl}, lut, record, groups);
     }
 
-    if (record.find('.', record.length() - groups.back()) != -1) return subans;
-    record.erase(record.length() - groups.back());
-    if (!record.empty()) {
-        if (record.back() == '#') return subans;
-        record.pop_back();
+    if (record.find('.', rl - groups[gl - 1]) < rl) return subans;
+    rl -= groups[gl - 1];
+    if (rl != 0) {
+        if (record[rl - 1] == '#') return subans;
+        rl--;
     }
-    groups.pop_back();
+    gl--;
 
-    return lut[line] = subans + solve({record, groups});
+    return lut[index] = subans + solve({rl, gl}, lut, record, groups);
 }
 
 int main(void) {
@@ -41,8 +40,8 @@ int main(void) {
         ss >> record;
         for (int num; ss >> num;) { groups.eb(num); ss.ignore(); }
 
-        lut.clear();
-        ans += solve({record, groups});
+        vector<long> lut(128 * 64, -1);
+        ans += solve({record.size(), groups.size()}, lut, record, groups);
     }
 
     cout << ans << endl;
