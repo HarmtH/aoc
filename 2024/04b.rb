@@ -1,22 +1,23 @@
 #!/usr/bin/ruby
 
+require_relative 'grid'
 require_relative 'point'
 
-grid = []
+grid = Grid.new
 ARGF.each_line do |line|
   grid << line
 end
 
 sum = 0
-Point::each_on(grid) do |p|
-  next unless p.on(grid) == "A"
+grid.each_key do |p|
+  next unless grid[p] == "A"
 
-  nw = (p + Point::NW).on(grid)
-  se = (p + Point::SE).on(grid)
+  nw = grid[p + Point::NW]
+  se = grid[p + Point::SE]
   next unless (nw == "M" && se == "S") || (nw == "S" && se == "M")
 
-  ne = (p + Point::NE).on(grid)
-  sw = (p + Point::SW).on(grid)
+  ne = grid[p + Point::NE]
+  sw = grid[p + Point::SW]
   next unless (ne == "M" && sw == "S") || (ne == "S" && sw == "M")
 
   sum += 1

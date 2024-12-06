@@ -1,19 +1,20 @@
 #!/usr/bin/ruby
 
+require_relative 'grid'
 require_relative 'point'
 
-grid = []
+grid = Grid.new
 ARGF.each_line do |line|
   grid << line
 end
 
 sum = 0
-Point::each_on(grid) do |p|
+grid.each_key do |p|
   Point::NEIGHBOURS.each do |dp|
     np = p
     good = true
     "XMAS".each_char do |c|
-      good &= np.on(grid) == c
+      good &= grid[np] == c
       np += dp
     end
     good && sum += 1

@@ -10,13 +10,26 @@ class Point
     Point.new(@y + p.y, @x + p.x)
   end
 
-  def <<(p)
-    @y += p.y
-    @x += p.x
+  def *(t)
+    if t == :right
+      Point.new(@x, -@y)
+    elsif t == :left
+      Point.new(-@x, @y)
+    else
+      throw "Illegal direction"
+    end
   end
 
   def to_s
     "(#{@y}, #{@x})"
+  end
+
+  def eql?(p)
+    @y == p.y && @x == p.x
+  end
+
+  def hash
+    [@y, @x].hash
   end
 
   N = Point.new(-1, 0).freeze
@@ -31,25 +44,4 @@ class Point
 
   STRAIGHT_NEIGHBOURS = [N, E, S, W].freeze
   NEIGHBOURS = [N, NE, E, SE, S, SW, W, NW].freeze
-
-  def valid_on?(grid)
-     @y >= 0 && @y < grid.length &&
-       @x >= 0 && @x < grid.length
-  end
-
-  def on!(grid)
-    grid[@y][@x]
-  end
-
-  def on(grid)
-    valid_on?(grid) && grid[@y][@x]
-  end
-
-  def self.each_on(grid)
-    for y in 0...grid.length
-      for x in 0..grid[0].length
-        yield Point.new(y, x)
-      end
-    end
-  end
 end
