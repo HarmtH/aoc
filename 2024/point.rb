@@ -27,6 +27,7 @@ class Point
   def eql?(p)
     @y == p.y && @x == p.x
   end
+  alias == eql?
 
   def hash
     [@y, @x].hash

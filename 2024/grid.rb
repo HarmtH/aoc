@@ -9,6 +9,12 @@ class Grid
     @ys = 0
   end
 
+  def initialize_copy(orig_grid)
+    @data = orig_grid.data.clone
+    @ys = orig_grid.ys
+    @xs = orig_grid.xs
+  end
+
   def <<(line)
     line = line.strip
     line.chars.each_with_index do |c, i|
