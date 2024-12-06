@@ -13,7 +13,7 @@ dir = Point::N
 
 while grid.key?(guard)
   grid[guard] = 'X'
-  if grid[guard + dir] == '#'
+  while grid[guard + dir] == '#'
     dir *= :right
   end
   guard += dir
