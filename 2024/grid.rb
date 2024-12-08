@@ -35,6 +35,14 @@ class Grid
     str
   end
 
+  def tov2p()
+    v2p = Hash.new
+    @data.each{|p,v|
+      (v2p[v] ||= []) << p
+    }
+    v2p
+  end
+
   def method_missing(name, *args, &block)
     @data.send(name, *args, &block)
   end
