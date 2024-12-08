@@ -12,8 +12,8 @@ antinodes = Set[]
 freqs = grid.values.reject{|v| v=='.'}.uniq
 freqs.each{|freq|
   points = grid.filter_map{|k,v| k if v==freq}
-  points.permutation(2).each{|pair|
-    antinode = pair[0] + (pair[0] - pair[1])
+  points.permutation(2).each{|p1, p2|
+    antinode = p1 + (p1 - p2)
     antinodes << antinode if grid.key?(antinode)
   }
 }

@@ -12,12 +12,11 @@ antinodes = Set[]
 freqs = grid.values.reject{|v| v=='.'}.uniq
 freqs.each{|freq|
   points = grid.filter_map{|k,v| k if v==freq}
-  points.permutation(2).each{|pair|
-    antinode = pair[0]
-    diff = pair[0] - pair[1]
-    while grid.key?(antinode) do
-      antinodes << antinode
-      antinode += diff
+  points.permutation(2).each{|p1, p2|
+    diff = p1 - p2
+    while grid.key?(p1)
+      antinodes << p1
+      p1 += diff
     end
   }
 }
