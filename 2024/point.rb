@@ -10,6 +10,10 @@ class Point
     Point.new(@y + p.y, @x + p.x)
   end
 
+  def -(p)
+    Point.new(@y - p.y, @x - p.x)
+  end
+
   def *(t)
     if t == :right
       Point.new(@x, -@y)
