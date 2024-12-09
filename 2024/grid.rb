@@ -35,7 +35,7 @@ class Grid
     str
   end
 
-  def tov2p()
+  def v2p()
     v2p = Hash.new
     @data.each{|p,v|
       (v2p[v] ||= []) << p
