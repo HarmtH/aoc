@@ -8,9 +8,9 @@ ARGF.each_line do |line|
   grid << line
 end
 
-def dfs(grid, p)
+dfs = -> (p) {
   return 1 if grid[p] == 9
-  (p.straight_neighbours & grid.v2p[grid[p] + 1]).map{|p| dfs(grid, p)}.sum
-end
+  (p.straight_neighbours & grid.v2p[grid[p] + 1]).map(&dfs).sum
+}
 
-puts grid.v2p[0].map{|p| dfs(grid, p)}.sum
+puts grid.v2p[0].map(&dfs).sum
