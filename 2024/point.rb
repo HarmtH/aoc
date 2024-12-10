@@ -47,6 +47,14 @@ class Point
   SW = (S + W).freeze
   NW = (N + W).freeze
 
-  STRAIGHT_NEIGHBOURS = [N, E, S, W].freeze
-  NEIGHBOURS = [N, NE, E, SE, S, SW, W, NW].freeze
+  STRAIGHT_DIRS = [N, E, S, W].freeze
+  DIRS = [N, NE, E, SE, S, SW, W, NW].freeze
+
+  def neighbours
+    DIRS.map{|dp| self + dp}
+  end
+
+  def straight_neighbours
+    STRAIGHT_DIRS.map{|dp| self + dp}
+  end
 end

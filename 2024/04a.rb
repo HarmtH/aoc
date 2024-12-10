@@ -10,7 +10,7 @@ end
 
 sum = 0
 grid.each_key do |p|
-  Point::NEIGHBOURS.each do |dp|
+  Point::DIRS.each do |dp|
     np = p
     good = true
     "XMAS".each_char do |c|
