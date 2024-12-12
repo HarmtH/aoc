@@ -9,22 +9,23 @@ ARGF.each_line do |line|
 end
 
 seen = Set.new
-dfs = lambda do |p|
-  return unless seen.add?(p)
+dfs = lambda do |pt|
+  return unless seen.add?(pt)
 
-  type = grid[p]
+  type = grid[pt]
   sides = [
     # top
-    grid[p + Point::N] != type && (grid[p + Point::W] != type || grid[p + Point::NW] == type),
+    grid[pt + Point::N] != type && (grid[pt + Point::W] != type || grid[pt + Point::NW] == type),
     # left
-    grid[p + Point::W] != type && (grid[p + Point::N] != type || grid[p + Point::NW] == type),
+    grid[pt + Point::W] != type && (grid[pt + Point::N] != type || grid[pt + Point::NW] == type),
     # bot
-    grid[p + Point::S] != type && (grid[p + Point::W] != type || grid[p + Point::SW] == type),
+    grid[pt + Point::S] != type && (grid[pt + Point::W] != type || grid[pt + Point::SW] == type),
     # right
-    grid[p + Point::E] != type && (grid[p + Point::N] != type || grid[p + Point::NE] == type)
+    grid[pt + Point::E] != type && (grid[pt + Point::N] != type || grid[pt + Point::NE] == type)
   ].count(&:itself)
 
-  p.straight_neighbours.filter { |nb| grid[nb] == type }
+  pt.straight_neighbours
+   .filter { |nb| grid[nb] == type }
    .filter_map(&dfs)
    .reduce([1, sides]) { |(a1, s1), (a2, s2)| [a1 + a2, s1 + s2] }
 end
