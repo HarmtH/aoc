@@ -18,6 +18,4 @@ dfs = -> (p) do
     .reduce([1, perim]){ |(s1, p1), (s2, p2)| [s1 + s2, p1 + p2] }
 end
 
-puts grid.keys.reduce(0) { |sum, p|
-  seen.include?(p) ? sum : sum + dfs.(p).reduce(:*)
-}
+puts grid.keys.filter_map(&dfs).map{ |s, p| s * p }.sum
