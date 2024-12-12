@@ -27,6 +27,7 @@ class Point
   def to_s
     "(#{@y}, #{@x})"
   end
+  alias inspect to_s
 
   def eql?(p)
     @y == p.y && @x == p.x
