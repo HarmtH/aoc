@@ -4,9 +4,8 @@ require 'matrix'
 
 M = Matrix.zero(2)
 puts ARGF.each_line.with_index.map { |line, idx|
-  idx %= 4
   tokens = 0
-  case idx
+  case idx % 4
   when 0
     M[0, 0], M[1, 0] = line.scan(/\d+/).map(&:to_i)
   when 1
