@@ -8,7 +8,7 @@ ARGF.each_line do |line|
   grid << line
 end
 
-seen = Set.new
+seen = Set[]
 dfs = lambda do |pt|
   return unless seen.add?(pt)
 
@@ -27,7 +27,8 @@ dfs = lambda do |pt|
   pt.straight_neighbours
    .filter { |nb| grid[nb] == type }
    .filter_map(&dfs)
-   .reduce([1, sides]) { |(a1, s1), (a2, s2)| [a1 + a2, s1 + s2] }
+    # Abuse Point class to store area and perimeter
+   .reduce(Point[1, sides], :+)
 end
 
 # a = area, s = sides

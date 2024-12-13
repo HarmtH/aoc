@@ -6,19 +6,23 @@ class Point
     @x = x
   end
 
+  def self.[](y, x)
+    return self.new(y, x)
+  end
+
   def +(p)
-    Point.new(@y + p.y, @x + p.x)
+    Point[@y + p.y, @x + p.x]
   end
 
   def -(p)
-    Point.new(@y - p.y, @x - p.x)
+    Point[@y - p.y, @x - p.x]
   end
 
   def *(t)
     if t == :right
-      Point.new(@x, -@y)
+      Point[@x, -@y]
     elsif t == :left
-      Point.new(-@x, @y)
+      Point[-@x, @y]
     else
       throw "Illegal direction"
     end
@@ -29,6 +33,14 @@ class Point
   end
   alias inspect to_s
 
+  def to_a
+    [@y, @x]
+  end
+
+  def to_ary
+    [@y, @x]
+  end
+
   def eql?(p)
     @y == p.y && @x == p.x
   end
@@ -38,10 +50,10 @@ class Point
     [@y, @x].hash
   end
 
-  N = Point.new(-1, 0).freeze
-  E = Point.new( 0, 1).freeze
-  S = Point.new( 1, 0).freeze
-  W = Point.new( 0,-1).freeze
+  N = Point[-1, 0].freeze
+  E = Point[ 0, 1].freeze
+  S = Point[ 1, 0].freeze
+  W = Point[ 0,-1].freeze
 
   NE = (N + E).freeze
   SE = (S + E).freeze

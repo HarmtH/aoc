@@ -21,7 +21,7 @@ class Grid
     line = line.strip
     line.chars.each_with_index do |c, i|
       c = c.to_i if c.match(/\d/)
-      @data[Point.new(@ys, i)] = c
+      @data[Point[@ys, i]] = c
     end
     @xs = [@xs, line.length].max
     @ys += 1
@@ -32,7 +32,7 @@ class Grid
     str = ""
     @ys.times do |y|
       @xs.times do |x|
-        str += @data[Point.new(y, x)] || '?'
+        str += @data[Point[y, x]] || '?'
       end
       str += "\n"
     end

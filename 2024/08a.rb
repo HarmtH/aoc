@@ -8,7 +8,7 @@ ARGF.each_line do |line|
   grid << line
 end
 
-antinodes = Set.new
+antinodes = Set[]
 grid.v2p.each{|freq, points|
   next if freq == '.'
   points.permutation(2).each{|p1, p2|

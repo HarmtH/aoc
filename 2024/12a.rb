@@ -8,7 +8,7 @@ ARGF.each_line do |line|
   grid << line
 end
 
-seen = Set.new
+seen = Set[]
 dfs = lambda do |pt|
   return unless seen.add?(pt)
 
@@ -16,8 +16,9 @@ dfs = lambda do |pt|
   perim = 4 - same_type_nbs.size
   same_type_nbs
     .filter_map(&dfs)
-    .reduce([1, perim]) { |(a1, p1), (a2, p2)| [a1 + a2, p1 + p2] }
+    # Abuse Point class to store area and perimeter
+    .reduce(Point[1, perim], :+)
 end
 
-# a = area, p = perimeter
-puts grid.keys.filter_map(&dfs).map { |a, p| a * p }.sum
+# a = area, s = perimeter
+puts grid.keys.filter_map(&dfs).map { |a, s| a * s }.sum
