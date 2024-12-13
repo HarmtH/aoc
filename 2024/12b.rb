@@ -27,7 +27,7 @@ dfs = lambda do |pt|
   pt.straight_neighbours
    .filter { |nb| grid[nb] == type }
    .filter_map(&dfs)
-    # Abuse Point class to store area and perimeter
+    # Abuse Point class to store area and sides
    .reduce(Point[1, sides], :+)
 end
 
