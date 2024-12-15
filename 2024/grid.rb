@@ -3,10 +3,11 @@ require_relative 'point'
 class Grid
   attr_accessor :data, :ys, :xs, :_v2p
 
-  def initialize()
-    @data = Hash.new
-    @xs = 0
-    @ys = 0
+  def initialize(ys: 0, xs: 0, multi: false)
+    @data = multi ? Hash.new{|h, k| h[k] = []} : {}
+    @multi = multi
+    @ys = ys
+    @xs = xs
     @_v2p = nil
   end
 
@@ -32,7 +33,9 @@ class Grid
     str = ""
     @ys.times do |y|
       @xs.times do |x|
-        str += @data[Point[y, x]] || '?'
+        to_print = @data.fetch(Point[y, x], '.')
+        to_print = to_print.size if to_print != '.' && @multi
+        str += to_print.to_s
       end
       str += "\n"
     end
@@ -48,9 +51,26 @@ class Grid
     @_v2p
   end
 
+  def size()
+    return @ys * @xs
+  end
+
+  def each_multi()
+    return to_enum(:each_multi) unless block_given?
+    @data.each { |p, a| a.each { |v| yield [p, v] } }
+  end
+
+  def sparse?()
+    size != @data.size
+  end
+
   def method_missing(name, *args, &block)
     if name != :[]
       @_v2p = nil
+    end
+    if name == :[]= || (name == :[] && @multi)
+      @ys = [@ys, args[0].y + 1].max
+      @xs = [@xs, args[0].x + 1].max
     end
     @data.send(name, *args, &block)
   end
