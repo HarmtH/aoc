@@ -31,5 +31,5 @@ dfs = lambda do |pt|
    .reduce(Point[1, sides], :+)
 end
 
-# a = area, s = sides
-puts grid.keys.filter_map(&dfs).map { |a, s| a * s }.sum
+# p.y = area, p.x = sides
+puts grid.keys.filter_map(&dfs).map { |p| p.y * p.x }.sum

@@ -20,5 +20,5 @@ dfs = lambda do |pt|
     .reduce(Point[1, perim], :+)
 end
 
-# a = area, s = perimeter
-puts grid.keys.filter_map(&dfs).map { |a, s| a * s }.sum
+# p.y = area, p.x = perimeter
+puts grid.keys.filter_map(&dfs).map { |p| p.y * p.x }.sum

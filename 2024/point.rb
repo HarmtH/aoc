@@ -1,13 +1,13 @@
 class Point
   attr_accessor :y, :x
 
+  def self.[](y, x)
+    return new(y, x)
+  end
+
   def initialize(y, x)
     @y = y
     @x = x
-  end
-
-  def self.[](y, x)
-    return self.new(y, x)
   end
 
   def +(p)
@@ -34,10 +34,6 @@ class Point
   alias inspect to_s
 
   def to_a
-    [@y, @x]
-  end
-
-  def to_ary
     [@y, @x]
   end
 
