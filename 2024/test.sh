@@ -23,3 +23,15 @@ for TESTFILE in $T; do
     fi
     echo ---
 done
+if [ -e $1.ans ] && ! [ -e $1.skip ]; then
+    echo "./$1.rb < ${1%%?}.in"
+    ANS=$(./$1.rb < ${1%%?}.in)
+    echo "$ANS"
+    REALANS=$(echo "$ANS" | tail -n 1)
+    CMPANS=$(cat $1.ans)
+    if [ "$REALANS" = "$CMPANS" ]; then
+        echo pass
+    else
+        echo FAIL: $CMPANS
+    fi
+fi
