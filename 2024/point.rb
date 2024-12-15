@@ -18,6 +18,10 @@ class Point
     Point[@y - p.y, @x - p.x]
   end
 
+  def %(grid)
+    Point[@y % grid.ys, @x % grid.xs]
+  end
+
   def *(t)
     if t == :right
       Point[@x, -@y]
