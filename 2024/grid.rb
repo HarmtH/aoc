@@ -49,7 +49,7 @@ class Grid
   end
 
   def method_missing(name, *args, &block)
-    if name != '[]'
+    if name != :[]
       @_v2p = nil
     end
     @data.send(name, *args, &block)
