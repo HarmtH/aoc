@@ -5,6 +5,29 @@ class Point
     return new(y, x)
   end
 
+  def self.dir(d)
+    case d
+    when 'N', '^'
+      self::N
+    when 'E', '>'
+      self::E
+    when 'S', 'v'
+      self::S
+    when 'W', '<'
+      self::W
+    when 'NE'
+      self::NE
+    when 'SE'
+      self::SE
+    when 'SW'
+      self::SW
+    when 'NW'
+      self::NW
+    else
+      throw "Illegal direction"
+    end
+  end
+
   def initialize(y, x)
     @y = y
     @x = x
@@ -23,12 +46,25 @@ class Point
   end
 
   def *(t)
-    if t == :right
-      Point[@x, -@y]
-    elsif t == :left
-      Point[-@x, @y]
+    if t.is_a?(Symbol)
+      if t == :right
+        Point[@x, -@y]
+      elsif t == :left
+        Point[-@x, @y]
+      else
+        throw "Illegal direction"
+      end
     else
-      throw "Illegal direction"
+      Point[t * @y, t * @x]
+    end
+  end
+
+  def coerce(other)
+    case other
+    when Numeric
+      return [self, other]
+    else
+      raise TypeError, "#{self.class} can't be coerced into #{other.class}"
     end
   end
 
@@ -50,10 +86,10 @@ class Point
     [@y, @x].hash
   end
 
-  N = Point[-1, 0].freeze
-  E = Point[ 0, 1].freeze
-  S = Point[ 1, 0].freeze
-  W = Point[ 0,-1].freeze
+  N = self[-1, 0].freeze
+  E = self[ 0, 1].freeze
+  S = self[ 1, 0].freeze
+  W = self[ 0,-1].freeze
 
   NE = (N + E).freeze
   SE = (S + E).freeze
