@@ -55,6 +55,10 @@ class Grid
     return @ys * @xs
   end
 
+  def valid?(p)
+    0 <= p.y && p.y < @ys && 0 <= p.x && p.x < @xs
+  end
+
   def each_multi()
     return to_enum(:each_multi) unless block_given?
     @data.each { |p, a| a.each { |v| yield [p, v] } }
