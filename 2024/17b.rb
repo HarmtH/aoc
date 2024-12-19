@@ -12,9 +12,9 @@ def check(a, subprogram)
 end
 
 def calc(value, pos, program)
-  return value if pos == 0
   8.times do |i|
     next if !check(value + i, program[pos..])
+    return value + i if pos == 0
     r = calc((value + i) << 3, pos - 1, program)
     return r if r
   end
