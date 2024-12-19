@@ -2,10 +2,10 @@
 
 class Computer
   attr_accessor :program, :regs, :ip, :out
-  A = 0; B = 1; C = 2
+  A = 4; B = 5; C = 6
 
   def initialize()
-    @regs = []
+    @regs = [0, 1, 2, 3]
     @out = []
     @ip = 0
     section = 0
@@ -20,36 +20,25 @@ class Computer
     end
   end
 
-  def combo(operand)
-    case operand
-    when 0..3
-      operand
-    when 4..6
-      @regs[operand - 4]
-    else
-      throw "invalid operand"
-    end
-  end
-
   def step()
     operand = program[@ip + 1]
     case program[@ip]
     when 0 # adv
-      @regs[A] = @regs[A] / (2 ** combo(operand))
+      @regs[A] = @regs[A] / (2 ** @regs[operand])
     when 1 # bxl
       @regs[B] = @regs[B] ^ operand
     when 2 # bst
-      @regs[B] = combo(operand) % 8
+      @regs[B] = @regs[operand] % 8
     when 3 # jnz
       @ip = operand - 2 if @regs[A] != 0
     when 4 # bxc
       @regs[B] = @regs[B] ^ @regs[C]
     when 5 # out
-      @out += [combo(operand) % 8]
+      @out += [@regs[operand] % 8]
     when 6 # bdv
-      @regs[B] = @regs[A] / 2 ** combo(operand)
+      @regs[B] = @regs[A] / 2 ** @regs[operand]
     when 7 # cdv
-      @regs[C] = @regs[A] / 2 ** combo(operand)
+      @regs[C] = @regs[A] / 2 ** @regs[operand]
     end
     @ip += 2
   end
