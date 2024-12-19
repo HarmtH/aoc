@@ -16,10 +16,11 @@ ARGF.map(&:chomp).each do |line|
   end
 end
 
-memoize def check(subdesign, patterns)
+def check(subdesign, patterns)
   return 1 if subdesign.empty?
   patterns.filter_map { |pattern| subdesign.start_with?(pattern) &&
     check(subdesign[pattern.size..], patterns) }.sum
 end
+memoize :check
     
 puts todo.map { |design| check(design, patterns) }.sum
