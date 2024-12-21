@@ -1,18 +1,14 @@
 #!/usr/bin/ruby
 
-def check(a, subprogram)
-  subprogram.size.times.all? do |i|
-    b = (a & 0b111) ^ 0b010
-    c = (a >> b) & 0b111
-    d = b ^ c ^ 0b011
-    a = a >> 3
-    subprogram[i] == d
-  end
+def check(a, cmp)
+  b = (a & 0b111) ^ 0b010
+  c = (a >> b) & 0b111
+  b ^ c ^ 0b011 == cmp
 end
 
 def calc(value, pos, program)
   (value ... value + 8)
-    .filter{|v| check(v, program[pos..])}
+    .filter{|v| check(v, program[pos])}
     .filter_map{|v| pos == 0 \
       ? v
       : calc(v << 3, pos - 1, program)}
