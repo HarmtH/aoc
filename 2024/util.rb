@@ -5,6 +5,14 @@ class Object
   end
 end
 
+module Enumerable
+  def at(n)
+    enum = is_a?(Enumerator) ? self : each
+    (n-1).times { enum.next }
+    enum.next
+  end
+end
+
 # Decorator to memoize the result of a given function
 def memoize(fn)
   cache = {}
