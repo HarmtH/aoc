@@ -3,9 +3,10 @@ require_relative 'point'
 class Grid
   attr_accessor :data, :ys, :xs, :_v2p
 
-  def initialize(ys: 0, xs: 0, multi: false)
+  def initialize(ys: 0, xs: 0, multi: false, str2num: true)
     @data = multi ? Hash.new{|h, k| h[k] = []} : {}
     @multi = multi
+    @str2num = str2num
     @ys = ys
     @xs = xs
     @_v2p = nil
@@ -19,9 +20,9 @@ class Grid
   end
 
   def <<(line)
-    line = line.strip
+    line = line.chomp
     line.chars.each_with_index do |c, i|
-      c = c.to_i if c.match(/\d/)
+      c = c.to_i if c.match(/\d/) && @str2num
       @data[Point[@ys, i]] = c
     end
     @xs = [@xs, line.length].max

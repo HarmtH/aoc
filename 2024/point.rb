@@ -59,6 +59,10 @@ class Point
     end
   end
 
+  def abs
+    @x.abs + @y.abs
+  end
+
   def coerce(other)
     case other
     when Numeric
@@ -97,6 +101,7 @@ class Point
   NW = (N + W).freeze
 
   STRAIGHT_DIRS = [N, E, S, W].freeze
+  CROSS_DIRS = [NE, SE, SW, NW].freeze
   DIRS = [N, NE, E, SE, S, SW, W, NW].freeze
 
   def neighbours
@@ -105,5 +110,9 @@ class Point
 
   def straight_neighbours
     STRAIGHT_DIRS.map{|dp| self + dp}
+  end
+
+  def cross_neighbours
+    CROSS_DIRS.map{|dp| self + dp}
   end
 end
