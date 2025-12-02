@@ -1,5 +1,5 @@
 CXX=clang++
-CXXFLAGS=-std=gnu++20 -Wall
+CXXFLAGS=-std=gnu++23 -Wall
 
 ifeq ($(FAST), 1)
 	CXXFLAGS+=-O3

@@ -5,4 +5,4 @@
 
 using namespace std;
 namespace r = std::ranges;
-namespace rv = std::ranges::views;
+namespace v = std::views;
