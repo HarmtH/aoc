@@ -20,3 +20,6 @@ $(SOURCES:.cpp=):
 
 %.in:
 	curl -s 'https://adventofcode.com/2025/day/$(shell echo $* | sed s/^0//)/input' -H "Cookie: session=$$(cat cookie.txt)" > $@
+
+%.web:
+	firefox 'https://adventofcode.com/2025/day/$(shell echo $* | sed s/^0//)'
