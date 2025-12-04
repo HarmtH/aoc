@@ -4,9 +4,21 @@
 #include <map>
 #include <vector>
 
+struct bbox_t {
+    long ymin = 0, ymax = 0, xmin = 0, xmax = 0;
+
+    static const bbox_t inf;
+
+    template<class T> static bbox_t from(const T& grid) {
+        return { .ymin = 0, .ymax = static_cast<long>(grid.size()),
+            .xmin = 0, .xmax = static_cast<long>(grid[0].size()) };
+    };
+};
+
+inline const bbox_t bbox_t::inf = bbox_t{ .ymin = LONG_MIN, .ymax = LONG_MAX, .xmin = LONG_MIN, .xmax = LONG_MAX };
+
 struct point_t {
-    long y;
-    long x;
+    long y, x;
     enum nb_dir_t { STRAIGHT, ALL };
     static const std::map<std::string, const point_t> dirs;
     static const std::map<std::string, const point_t> straight_dirs;
@@ -18,23 +30,24 @@ struct point_t {
     point_t(const char* dir) { *this = dirs.at(dir); };
     point_t(const char dir) { *this = dirs.at(std::string{dir}); };
 
-    bool is_valid(long ys, long xs) const { return 0 <= y && y < ys && 0 <= x && x < xs; }
-    template<class T> bool is_valid(const T& grid) const { return 0 <= y && y < grid.size() && 0 <= x && x < grid[0].size(); }
+    bool is_valid(const bbox_t &box) const { return box.ymin <= y && y < box.ymax && box.xmin <= x && x < box.xmax; }
     long dist(void) const { return labs(y) + labs(x); }
     long dist(const point_t& rhs) const { return labs(y - rhs.y) + labs(x - rhs.x); }
-    std::vector<point_t> get_valid_neighbours(long ys, long xs, nb_dir_t nb_dir = ALL) const {
+    std::vector<point_t> neighbours(const bbox_t &box, nb_dir_t nb_dir = ALL) const {
         std::vector<point_t> neighbours;
         for (const auto& [_, dir] : (nb_dir == STRAIGHT ? straight_dirs : dirs)) {
             auto new_point = *this + dir;
-            if (new_point.is_valid(ys, xs)) neighbours.emplace_back(std::move(new_point));
+            if (new_point.is_valid(box)) neighbours.emplace_back(std::move(new_point));
         }
         return neighbours;
     }
-    template<class T> std::vector<point_t> get_valid_neighbours(const T& grid, nb_dir_t nb_dir = ALL) const {
-        return get_valid_neighbours(grid.size(), grid[0].size(), nb_dir);
+
+    template <class T> bool is_valid_on(const T& grid) const { is_valid(bbox_t::from(grid)); }
+    template <class T> std::vector<point_t> neighbours_on(const T& grid, nb_dir_t nb_dir = ALL) const {
+        return neighbours(bbox_t::from(grid), nb_dir);
     }
-    std::vector<point_t> get_neighbours(nb_dir_t nb_dir = ALL) const {
-        return get_valid_neighbours(INT_MAX, INT_MAX, nb_dir);
+    template<class T> auto value_on(const T& grid) {
+        return grid.at(y).at(x);
     }
 
     point_t operator=(const point_t& rhs) { x=rhs.x; y=rhs.y; return *this; }
