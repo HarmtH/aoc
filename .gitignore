@@ -1,0 +1,10 @@
+*/target/*
+*.sw?
+*.a?
+*.t?
+*.i?
+*.fasl
+tags
+Cargo.lock
+cookie
+session
