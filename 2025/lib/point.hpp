@@ -1,4 +1,5 @@
 #include <climits>
+#include <cmath>
 #include <cstdlib>
 #include <iostream>
 #include <map>
@@ -31,8 +32,13 @@ struct Point {
     Point(const char dir) { *this = dirs.at(std::string{dir}); };
 
     bool is_valid(const Box &box) const { return box.ymin <= y && y < box.ymax && box.xmin <= x && x < box.xmax; }
-    long dist(void) const { return labs(y) + labs(x); }
-    long dist(const Point& rhs) const { return labs(y - rhs.y) + labs(x - rhs.x); }
+    long mdist(void) const { return labs(y) + labs(x); }
+    double edist(void) const { return sqrt(y * y + x * x); }
+    long mdist(const Point& rhs) const { return labs(y - rhs.y) + labs(x - rhs.x); }
+    double edist(const Point& rhs) const {
+        long _y = y - rhs.y, _x = x - rhs.x;
+        return sqrt(_y * _y + _x * _x);
+    }
     std::vector<Point> neighbours(const Box &box, nb_dir_t nb_dir = ALL) const {
         std::vector<Point> neighbours;
         for (const auto& [_, dir] : (nb_dir == STRAIGHT ? straight_dirs : dirs)) {
