@@ -12,6 +12,9 @@ endif
 SOURCES = $(wildcard *.cpp)
 $(SOURCES:.cpp=):
 
+clean:
+	rm $(SOURCES:.cpp=)
+
 %.test: %
 	./test.sh $*
 
