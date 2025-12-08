@@ -6,8 +6,10 @@ for TESTFILE in $T; do
         echo no tests
         continue
     fi
-    echo "./$1 < $TESTFILE"
-    ANS=$(./$1 < $TESTFILE)
+    ARGSFILE=$(echo $TESTFILE | sed 's/\.t\([0-9]\)\+$/\.i\1/')
+    [ -f "$ARGSFILE" ] && ARGS="$(cat $ARGSFILE) "
+    echo "./$1 $ARGS< $TESTFILE"
+    ANS=$(./$1 $ARGS< $TESTFILE)
     echo "$ANS"
     REALANS=$(echo "$ANS" | tail -n 1)
     CMPFILE=$(echo $TESTFILE | sed 's/\.t\([0-9]\)\+$/\.a\1/')
