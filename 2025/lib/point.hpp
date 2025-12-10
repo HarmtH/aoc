@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <climits>
 #include <cmath>
 #include <cstdlib>
@@ -5,15 +6,35 @@
 #include <map>
 #include <vector>
 
+struct Point;
+
 struct Box {
     long ymin = 0, ymax = 0, xmin = 0, xmax = 0;
 
     static const Box inf;
 
     template<class T> static Box from(const T& grid) {
-        return { .ymin = 0, .ymax = static_cast<long>(grid.size()),
-            .xmin = 0, .xmax = static_cast<long>(grid[0].size()) };
+        return { .ymin = 0, .ymax = static_cast<long>(grid.size()) - 1,
+            .xmin = 0, .xmax = static_cast<long>(grid[0].size()) - 1 };
     };
+
+    static Box from(const Point& p1, const Point& p2);
+
+    bool is_overlaps(const Box& rhs) {
+        return xmax >= rhs.xmin && xmin <= rhs.xmax && ymax >= rhs.ymin && ymin <= rhs.ymax;
+    }
+
+    void grow(long val = 1) {
+        xmin -= val; xmax += val; ymin -= val; ymax += val;
+    }
+
+    void shrink(long val = 1) {
+        grow(-val);
+    }
+
+    long area() {
+        return (xmax - xmin + 1) * (ymax - ymin + 1);
+    }
 };
 
 inline const Box Box::inf = Box{ .ymin = LONG_MIN, .ymax = LONG_MAX, .xmin = LONG_MIN, .xmax = LONG_MAX };
@@ -31,7 +52,7 @@ struct Point {
     Point(const char* dir) { *this = dirs.at(dir); };
     Point(const char dir) { *this = dirs.at(std::string{dir}); };
 
-    bool is_valid(const Box &box) const { return box.ymin <= y && y < box.ymax && box.xmin <= x && x < box.xmax; }
+    bool is_valid(const Box &box) const { return box.ymin <= y && y <= box.ymax && box.xmin <= x && x <= box.xmax; }
     long mdist(void) const { return labs(y) + labs(x); }
     double edist(void) const { return sqrt(y * y + x * x); }
     long mdist(const Point& rhs) const { return labs(y - rhs.y) + labs(x - rhs.x); }
@@ -87,3 +108,8 @@ inline const std::map<std::string , const Point>Point::dirs = {
 
 inline const std::map<std::string, const Point>Point::straight_dirs =
     {{"N", {-1,0}}, {"E", {0,1}}, {"S", {1,0}}, {"W", {0,-1}}};
+
+Box Box::from(const Point& p1, const Point& p2) {
+    return { .ymin = std::min(p1.y, p2.y), .ymax = std::max(p1.y, p2.y),
+        .xmin = std::min(p1.x, p2.x), .xmax = std::max(p1.x, p2.x) };
+};

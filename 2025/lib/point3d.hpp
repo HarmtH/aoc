@@ -10,9 +10,9 @@ struct Box3d {
 
     template<class T> static Box3d from(const T& grid) {
         return {
-            .zmin = 0, .zmax = static_cast<long>(grid.size()),
-            .ymin = 0, .ymax = static_cast<long>(grid[0].size()),
-            .xmin = 0, .xmax = static_cast<long>(grid[0][0].size()) };
+            .zmin = 0, .zmax = static_cast<long>(grid.size()) - 1,
+            .ymin = 0, .ymax = static_cast<long>(grid[0].size()) - 1,
+            .xmin = 0, .xmax = static_cast<long>(grid[0][0].size()) - 1};
     };
 };
 
@@ -28,7 +28,7 @@ struct Point3d {
     Point3d(const long _z, const long _y, const long _x) : z{_z}, y{_y}, x{_x} {};
     Point3d(const Point3d& rhs) : z{rhs.z}, y{rhs.y}, x{rhs.x} {};
 
-    // bool is_valid(const Box &box) const { return box.ymin <= y && y < box.ymax && box.xmin <= x && x < box.xmax; }
+    // bool is_valid(const Box &box) const { return box.ymin <= y && y <= box.ymax && box.xmin <= x && x <= box.xmax; }
     long mdist(void) const { return labs(z) + labs(y) + labs(x); }
     double edist(void) const { return sqrt(z * z + y * y + x * x); }
     long mdist(const Point3d& rhs) const { return labs(z - rhs.z) + labs(y - rhs.y) + labs(x - rhs.x); }
