@@ -1,15 +1,13 @@
 #include "lib/prelude.hpp"
 
-int solve(const string& in, const auto& connections) {
+map<string, vector<string>> connections;
+
+int solve(const string& in) {
     if (in == "out") return 1;
-    int sub_ans{0};
-    for (const auto& out : connections.at(in))
-        sub_ans += solve(out, connections);
-    return sub_ans;
+    return r::fold_left(connections.at(in) | v::transform(solve), 0, plus{});
 }
 
 int main(void) {
-    map<string, vector<string>> connections;
     for (string line; getline(cin, line);) {
         stringstream ss{line};
         string in; ss >> in; in.pop_back();
@@ -17,6 +15,6 @@ int main(void) {
         while (ss >> out) { outs.eb(out); }
         connections[in] = std::move(outs);
     }
-    cout << solve("you", connections) << endl;
+    cout << solve("you") << endl;
     return 0;
 }
