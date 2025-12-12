@@ -10,10 +10,8 @@ long solve(const string& in, const auto& connections, char visits = {}, map<pair
     if (in == "fft")
         visits |= 0b10;
     long sub_ans{0};
-    for (const auto& out : connections.at(in)) {
-        // std::forward looks so smart
+    for (const auto& out : connections.at(in))
         sub_ans += solve(out, connections, visits, std::forward<decltype(cache)>(cache));
-    }
     cache[{in, visits}] = sub_ans;
     return sub_ans;
 }

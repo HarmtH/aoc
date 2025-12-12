@@ -3,9 +3,8 @@
 int solve(const string& in, const auto& connections) {
     if (in == "out") return 1;
     int sub_ans{0};
-    for (const auto& out : connections.at(in)) {
+    for (const auto& out : connections.at(in))
         sub_ans += solve(out, connections);
-    }
     return sub_ans;
 }
 
