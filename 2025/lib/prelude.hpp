@@ -8,5 +8,7 @@
 #define se second
 
 using namespace std;
+using namespace std::placeholders;
+
 namespace r = std::ranges;
 namespace v = std::views;
